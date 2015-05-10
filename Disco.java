@@ -86,6 +86,17 @@ public class Disco {
 			}else if(option == 6){
 				System.out.println("--------------------------------------------------------------");
 				System.out.println("Creando registros");
+				for( int num = 1, i = 1; i <= 1; i++ ) { //Numero de Surcursales
+					for( int j = 1; j <= 100; j++ ) { //Numero de clientes
+						for( int k = 1; k <= 1; k++, num++ ) {
+							String suc = "Sucursal " + String.format( "%3d", i );
+							String nom = "Cliente " + j;
+							double salMin = 100.0, salMax = 30000.6;
+							double sal = Math.random() * (salMax - salMin) + salMin;
+							archivo.insertar( new Registro( suc, num, nom, sal ) );
+                    	}
+                	}
+            	}
 				System.out.println("Registros creados");
 			}else{
 				System.out.println("--------------------------------------------------------------");
