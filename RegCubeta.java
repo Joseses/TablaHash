@@ -44,18 +44,11 @@ public class RegCubeta {
 		this.estado = (byte)raf.read();
 		raf.read( codigo );
 		ligaReg = raf.readInt();
-		System.out.println(raf.getFilePointer() + " apuntador en regcubeta");
-		System.out.println(estado + " estado en regcubeta");
-		System.out.println(ligaReg + " liga en regcubeta");
 	}
 
 	public void write( RandomAccessFile raf ) throws IOException {
-		System.out.println(raf.getFilePointer() + " apuntador de entrada en regcubeta");
 		raf.write( estado );
 		raf.write( codigo );
 		raf.writeInt(ligaReg);
-		System.out.println("[RegCubeta - write] Se ha escrito: estado:" + estado 
-							+ " codigo:" + getCodigo() + " liga:" + ligaReg);
-		System.out.println(raf.getFilePointer() + " apuntador de salida en regcubeta");
 	}
 }
