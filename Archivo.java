@@ -17,25 +17,26 @@ public class Archivo {
 	}
 	
 	public void insertar(Registro registro) throws IOException{
-		insertarEn((int)raf.getFilePointer(), registro);
+		insertarEn(((int)raf.length()/registro.length()), registro);
+		System.out.println("Se inserta el numero " + registro.getNumero());
 		tablahash.insertarEntrada(registro, (int)raf.length()-registro.length());
 	}
 	
 	private void insertarEn( int posicion, Registro registro ) throws IOException {
-        
+
 		int n = (int) raf.length() / registro.length();
-        
+
 		for( int i = n-1; i >= posicion; i -- ) {
-            
+
 			Registro temp = new Registro();
-            
+
 			raf.seek( i * temp.length() );
 			temp.read( raf );
-            
+
 			raf.seek( (i+1) * temp.length() );
 			temp.write( raf );
 		}
-        
+
 		raf.seek( posicion * registro.length() );
 		registro.write( raf );
 	}
