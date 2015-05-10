@@ -2,7 +2,7 @@ import java.io.*;
 
 public class TabladeHash {
 	
-	private static int tamIndice;
+	private static int tamIndice = 0;
 	public RegIndice registro = null;
     private RandomAccessFile raf = null;
     private Cubeta cubetas = null;
@@ -11,7 +11,6 @@ public class TabladeHash {
 		raf = indice;
 		registro = new RegIndice();
 		this.cubetas = new Cubeta(cubetas);
-		tamIndice = 0;
 	}
 	
 	public void cerrar() throws IOException {
@@ -38,23 +37,16 @@ public class TabladeHash {
 			temp.setLiga(0);
 			temp.write(raf);
 			//Creamos una cubeta con el valor asociado del registro de la tabla 
-			System.out.println("[TABLA - insertarEntrada] ANTES DE CREAR CUBETA");
 			cubetas.crearCubeta(0, 0, temp.getClave()); 
-			System.out.println("[TABLA - insertarEntrada] DESPUES DE CREAR CUBETA");
-			System.out.println("[TABLA - insertarEntrada] Tamaño de cubeta" + cubetas.cubetaSize());
-			System.out.println("[TABLA - insertarEntrada] ANTES DE LEER CUBETA");
 			cubetas = cubetas.leerCubeta(0);
-			System.out.println("[TABLA - insertarEntrada] DESPUES DE LEER CUBETA");
 			RegCubeta[] temporal = cubetas.getRegistros();
 			RegCubeta nueva = new RegCubeta();
-			System.out.println("[TABLA - insertarEntrada] ESTADO DESPUES DE DECLARAR 'NUEVA' " + nueva.getEstado());
 			nueva.setEstado((byte)1);
 			nueva.setCodigo(clave);
 			nueva.setLiga(pos);
 			temporal[0] = nueva;
 			for(int i = 0; i<temporal.length;i++) {
 				RegCubeta tem = temporal[i];
-				System.out.println("[TABLA - insertarEntrada] Estado de i:" + i + " " + tem.getEstado());
 			}
 			cubetas.registros = temporal;
 			cubetas.escribirCubeta(0);
@@ -64,9 +56,7 @@ public class TabladeHash {
 			boolean hayEspacio = false;
 			for(int i = 0; i<cubetas.registros.length; i++) {
 				RegCubeta bus = cubetas.registros[i];
-				System.out.println("[TABLA - insertarEntrada] Estado en i: " + i + " " + bus.getEstado());
 				if(bus.getEstado()==0){
-					System.out.println("[TABLA - insertarEntrada] Se encontró un espacio vacío en la posición: " + i);
 					hayEspacio = true;
 					bus.setEstado((byte)1);
 					bus.setCodigo(clave);
@@ -77,12 +67,15 @@ public class TabladeHash {
 				} //end if
 			} //end for
 			if(!hayEspacio) {
-				System.out.println("[TABLA - insertarEntrada] Tamaño antes de split " + cubetas.getrafLength());
 				cubetas.split(0);
-				System.out.println("[TABLA - insertarEntrada] Tamaño después de split " + cubetas.getrafLength());
 				cubetas.leerCubeta(0);
+				System.out.println("[TABLA - insertar] Generacion de cubeta: " 
+								+ cubetas.getGeneracion() + "es mayor a tamIndice? " 
+								+ this.tamIndice);
 				if(cubetas.getGeneracion()>this.tamIndice) {
 					duplicarTabla();
+					acomodarPunteros();
+				} else {
 					acomodarPunteros();
 				}
 				insertarEntradaPost(archRegistro, pos);
@@ -93,6 +86,7 @@ public class TabladeHash {
 	} //end insertarEntrada
 	
 	public void insertarEntradaPost(Registro archRegistro, int pos) throws IOException {
+		int n = (int) cubetas.getrafLength() / cubetas.cubetaSize();
 		String clave = funcionHash(archRegistro.getNumero());
 		String claveRes = clave.substring(clave.length()-tamIndice);
 		
@@ -113,25 +107,29 @@ public class TabladeHash {
 		boolean hayEspacio = false;
 		for(int i = 0; i<cubetas.registros.length; i++) {
 			RegCubeta bus = cubetas.registros[i];
-			System.out.println("[TABLA - insertarEntrada] Estado en i: " + i + " " + bus.getEstado());
+			System.out.println("[TABLA - insertPost] Insertando: " +  archRegistro.getNumero());
+			System.out.println("[TABLA - insertPost] estado de i:" + i + " " + bus.getEstado());
 			if(bus.getEstado()==0){
-				System.out.println("[TABLA - insertarEntrada] Se encontró un espacio vacío en la posición: " + i);
 				hayEspacio = true;
 				bus.setEstado((byte)1);
 				bus.setCodigo(clave);
 				bus.setLiga(pos);
 				cubetas.registros[i] = bus;
 				i = cubetas.registros.length;
-				cubetas.escribirCubeta(0);
+				cubetas.escribirCubeta(posAInsertar);
 			} //end if
 		} //end for
 		if(!hayEspacio) {
-			System.out.println("[TABLA - insertarEntrada] Tamaño antes de split " + cubetas.getrafLength());
-			cubetas.split(0);
-			System.out.println("[TABLA - insertarEntrada] Tamaño después de split " + cubetas.getrafLength());
-			cubetas.leerCubeta(0);
+			n = (int) cubetas.getrafLength() / cubetas.cubetaSize();
+			cubetas.split(posAInsertar);
+			cubetas = cubetas.leerCubeta(posAInsertar);
+			System.out.println("[TABLA - inserPost] Generacion de cubeta: " 
+								+ cubetas.getGeneracion() + "es mayor a tamIndice? " 
+								+ this.tamIndice);
 			if(cubetas.getGeneracion()>this.tamIndice) {
 				duplicarTabla();
+				acomodarPunteros();
+			} else {
 				acomodarPunteros();
 			}
 			insertarEntradaPost(archRegistro, pos);
@@ -139,7 +137,8 @@ public class TabladeHash {
 	}
 	
 	public void duplicarTabla() throws IOException{
-		tamIndice++;
+		System.out.println("[TABLA - duplicar] Valor de tamIndice " + (tamIndice+1));
+		TabladeHash.tamIndice = (TabladeHash.tamIndice+1);
 		int numeroDeRegistros = (int)Math.pow(2, tamIndice);
 		for(int i = 0; i<numeroDeRegistros; i++) {
 			String temporal = funcionHash(i);
@@ -159,7 +158,7 @@ public class TabladeHash {
 			temporal.read(raf);
 			String regindice = temporal.getClave().trim();
 			for(int j = 0; j<numeroCubetas; j++) {
-				cubetas.leerCubeta(j*(cubetas.cubetaSize()));
+				cubetas = cubetas.leerCubeta(j*(cubetas.cubetaSize()));
 				String regcubeta = cubetas.getClavedeTabla().trim();
 				if(regindice.endsWith(regcubeta)) {
 					temporal.setLiga(j*(cubetas.cubetaSize()));
@@ -186,12 +185,12 @@ public class TabladeHash {
 			cubetas = cubetas.leerCubeta(i*(cubetas.cubetaSize()));
 			System.out.println("[GENERACION] " + cubetas.getGeneracion() 
 								+ " [CLAVE] " + cubetas.getClavedeTabla());
+			RegCubeta[] tempo = cubetas.getRegistrosForzado(i*(cubetas.cubetaSize()));
 			for(int j = 0; j<Cubeta.CUBETAM;j++) {
-				RegCubeta tempo = new RegCubeta();
-				tempo = cubetas.registros[i];
-				System.out.println("   [ESTADO] " + tempo.getEstado() 
-									+ " [CODIGO] " + tempo.getCodigo() 
-									+ " [APUNTADOR] " + tempo.getLiga());
+				RegCubeta temporal = tempo[j];
+				System.out.println("   [ESTADO] " + temporal.getEstado() 
+									+ " [CODIGO] " + temporal.getCodigo() 
+									+ " [APUNTADOR] " + temporal.getLiga());
 			}
 		}
 	}
