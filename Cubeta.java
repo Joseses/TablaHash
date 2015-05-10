@@ -17,11 +17,13 @@ public class Cubeta {
 		registro = new RegCubeta();
 	}
 	
-	public Cubeta() {}
+	public Cubeta() {
+		clavedeTabla = new byte[ clavedeTabla.length ];
+		RegCubeta registro = new RegCubeta();
+	}
 	
 	public Cubeta leerCubeta(int pos) throws IOException{
 		this.raf.seek(pos);
-		System.out.println("[CUBETA - leerCubeta] Posicion " + raf.getFilePointer());
 		this.read(this.raf);
 		return this;
 	}
@@ -32,6 +34,17 @@ public class Cubeta {
 	
 	public int getrafLength() throws IOException{
 		return (int)raf.length();
+	}
+	
+	public RegCubeta[] getRegistrosForzado(int pos) throws IOException {
+		raf.seek(pos+clavedeTabla.length+4);
+		RegCubeta[] forzado = new RegCubeta[CUBETAM];
+		for(int i = 0; i<CUBETAM; i++) {
+			RegCubeta tempo = new RegCubeta();
+			tempo.read(raf);
+			forzado[i] = tempo;
+		}
+		return forzado;
 	}
 	
 	public void setClavedeTabla( String nom ) {
@@ -50,7 +63,7 @@ public class Cubeta {
 	}
 	
 	public int cubetaSize() {
-		return (Integer.SIZE / 8)+(clavedeTabla.length)+(registro.length()*CUBETAM);
+		return (Integer.SIZE / 8)+(20)+(25*CUBETAM);
 	}
 	
 	public void read( RandomAccessFile raf ) throws IOException {
@@ -58,10 +71,7 @@ public class Cubeta {
 		raf.read(clavedeTabla);
 		for(int i = 0; i<CUBETAM;i++) {
 			RegCubeta nuevo = new RegCubeta();
-			System.out.println("Entramos a for en CUBETA");
-			System.out.println("[CUBETA - read] Posicion antes de leer " + raf.getFilePointer());
 			nuevo.read(raf);
-			System.out.println("[CUBETA - read] Estado de registro " + nuevo.getEstado());
 			registros[i] = nuevo;
 		}
 	}
@@ -71,7 +81,6 @@ public class Cubeta {
 		raf.write(clavedeTabla);
 		for(int i = 0; i<CUBETAM;i++) {
 			registro = registros[i];
-			System.out.println("Clave de registro en cubeta " + registro.getEstado());
 			registro.write(raf);
 		}
 	}
@@ -89,7 +98,6 @@ public class Cubeta {
 		this.registros = temporales;
 		this.raf.seek(pos);
 		this.write(raf);
-		System.out.println("RAF length en cubeta " + raf.length());
 	}
 	
 	public void escribirCubeta(int pos) throws IOException {
@@ -101,9 +109,9 @@ public class Cubeta {
 		int n = (int) raf.length() / this.cubetaSize();
 		for( int i = n-1; i >= posicion; i -- ) {
 			Cubeta temp = new Cubeta();
-			raf.seek( i * temp.cubetaSize() );
+			raf.seek( i * this.cubetaSize() );
 			temp.read( raf );
-			raf.seek( (i+1) * temp.cubetaSize() );
+			raf.seek( (i+1) * this.cubetaSize() );
 			temp.write( raf );
 		}
 		raf.seek( posicion * this.cubetaSize() );
@@ -111,42 +119,50 @@ public class Cubeta {
 	}
 	
 	public void split(int pos) throws IOException{
+		System.out.println("[CUBETA - split] LLAMADO A SPLIT------------------------------------");
+		int n = (int) raf.length() / this.cubetaSize();
 		this.genCubeta++;
 		//Numero binario que se usara como clave de asociación a la tabla de hash
 		int repreBin = (int)Math.pow(2, this.genCubeta); 
+		System.out.println("[CUBETA - split] valor de repreBin: " + repreBin);
 		String asocTablaTemp = Integer.toBinaryString(repreBin);
+		System.out.println("[CUBETA - split] valor de asocTablaTempo: " + asocTablaTemp);
 		String claveActual = this.getClavedeTabla();
+		System.out.println("[CUBETA - split] valor de claveActual: " + claveActual);
 		claveActual = claveActual.trim();
-		String clavecubeta1 = asocTablaTemp.substring(asocTablaTemp.length()-1, asocTablaTemp.length())
-						+ claveActual;
-		String clavecubeta2 = asocTablaTemp.substring(asocTablaTemp.length()-2, asocTablaTemp.length()-1)
-						+ claveActual;
+		String clavecubeta1 = "0" + claveActual;
+		String clavecubeta2 = "1" + claveActual;
+		System.out.println("[CUBETA - split] Al final la clave1 es: " +  clavecubeta1 + " clave2:" + clavecubeta2);
 		raf.seek(pos);
 		this.setClavedeTabla(clavecubeta1);
 		write(raf);
 		this.setClavedeTabla(clavecubeta2);
-		this.insertarCubeta((int)raf.length()/(pos+this.cubetaSize()));
+		//this.insertarCubeta((int)raf.length()/(pos+this.cubetaSize()));
+		this.insertarCubeta((pos+this.cubetaSize())/this.cubetaSize());
+		n = (int) raf.length() / this.cubetaSize();
 		this.organizarRegistros(pos);
 		this.organizarRegistros(pos+this.cubetaSize());
-		
 	}
 	
 	public void organizarRegistros(int pos) throws IOException{
+		System.out.println("[CUBETA - org] Posicion inicial: " + pos);
 		raf.seek(pos);
 		this.read(raf);
 		RegCubeta[] temporales = this.registros;
 		String claveBuena = this.getClavedeTabla().trim();
+		System.out.println("[CUBETA - org] La clave buena es: " + claveBuena);
 		for(int i = 0; i <temporales.length; i++) {
 			RegCubeta temp = new RegCubeta();
 			temp = temporales[i];
 			String claveTemporal = temp.getCodigo().trim();
-			System.out.println("[CUBETA - org] Codigo de cubeta: " + temp.getCodigo());
 			claveTemporal = claveTemporal.substring(claveTemporal.length()-this.genCubeta);
 			if(!claveBuena.equals(claveTemporal)) {
 				temp.setEstado((byte)0);
 				temp.setCodigo("");
 				temp.setLiga(-1);
 				temp = temporales[i];
+			} else {
+				System.out.println("[CUBETA - org]La clave buena sí es buena: " +  claveBuena + " claveTemporal: " + claveTemporal);
 			}
 		}
 		this.registros = temporales;
