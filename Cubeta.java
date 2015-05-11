@@ -3,13 +3,14 @@ import java.io.RandomAccessFile;
 
 public class Cubeta {
 	
-	public static final int CUBETAM = 5;
+	public static final int CUBETAM = 100;
 	
 	public RegCubeta registro = null;
 	private RandomAccessFile raf = null;
 	public RegCubeta[] registros = new RegCubeta[CUBETAM];
 	
 	public int genCubeta;
+	public int lastIndex;
 	public byte[] clavedeTabla = new byte[20];
 	
 	public Cubeta(RandomAccessFile indice) {
@@ -20,6 +21,14 @@ public class Cubeta {
 	public Cubeta() {
 		clavedeTabla = new byte[ clavedeTabla.length ];
 		RegCubeta registro = new RegCubeta();
+	}
+
+	public int getLastIndex() {
+		return this.lastIndex;
+	}
+
+	public void setLastIndex(int lastIndex) {
+		this.lastIndex = lastIndex;
 	}
 	
 	public Cubeta leerCubeta(int pos) throws IOException{
@@ -37,7 +46,7 @@ public class Cubeta {
 	}
 	
 	public RegCubeta[] getRegistrosForzado(int pos) throws IOException {
-		raf.seek(pos+clavedeTabla.length+4);
+		raf.seek(pos+clavedeTabla.length+8);
 		RegCubeta[] forzado = new RegCubeta[CUBETAM];
 		for(int i = 0; i<CUBETAM; i++) {
 			RegCubeta tempo = new RegCubeta();
@@ -63,11 +72,12 @@ public class Cubeta {
 	}
 	
 	public int cubetaSize() {
-		return (Integer.SIZE / 8)+(20)+(25*CUBETAM);
+		return ((Integer.SIZE / 8)*2)+(20)+(25*CUBETAM);
 	}
 	
 	public void read( RandomAccessFile raf ) throws IOException {
 		genCubeta = raf.readInt();
+		lastIndex = raf.readInt();
 		raf.read(clavedeTabla);
 		for(int i = 0; i<CUBETAM;i++) {
 			RegCubeta nuevo = new RegCubeta();
@@ -78,6 +88,7 @@ public class Cubeta {
 	
 	public void write( RandomAccessFile raf) throws IOException {
 		raf.writeInt(genCubeta);
+		raf.writeInt(lastIndex);
 		raf.write(clavedeTabla);
 		for(int i = 0; i<CUBETAM;i++) {
 			registro = registros[i];
@@ -87,6 +98,7 @@ public class Cubeta {
 	
 	public void crearCubeta(int pos, int generacion, String clave) throws IOException {
 		this.genCubeta = generacion;
+		this.lastIndex = 0;
 		this.setClavedeTabla(clave);
 		RegCubeta[] temporales = new RegCubeta[CUBETAM];
 		for(int i = 0; i<CUBETAM; i++) {
@@ -167,6 +179,7 @@ public class Cubeta {
 		}
 		this.registros = temporales;
 		raf.seek(pos);
+		this.lastIndex = 0;
 		this.write(raf);
 	}
 }

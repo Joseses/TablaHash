@@ -52,26 +52,15 @@ public class TabladeHash {
 			cubetas.escribirCubeta(0);
 		} else if (raf.length()==registro.length()) { //Sólo existe una entrada en el registro
 													//Cualquier clave puede entrar a la cubeta asociada
+			System.out.println("[TABLA - insert] Solo existe una entrada");
 			cubetas = cubetas.leerCubeta(0);
-			boolean hayEspacio = false;
-			for(int i = 0; i<cubetas.registros.length; i++) {
-				RegCubeta bus = cubetas.registros[i];
-				if(bus.getEstado()==0){
-					hayEspacio = true;
-					bus.setEstado((byte)1);
-					bus.setCodigo(clave);
-					bus.setLiga(pos);
-					cubetas.registros[i] = bus;
-					i = cubetas.registros.length;
-					cubetas.escribirCubeta(0);
-				} //end if
-			} //end for
-			if(!hayEspacio) {
+			if(cubetas.getLastIndex()==cubetas.registros.length) { //La cubeta está llena
+				System.out.println("[TABLA - insertPos] Cubeta llena");
 				cubetas.split(0);
-				cubetas.leerCubeta(0);
-				System.out.println("[TABLA - insertar] Generacion de cubeta: " 
-								+ cubetas.getGeneracion() + "es mayor a tamIndice? " 
-								+ this.tamIndice);
+				cubetas = cubetas.leerCubeta(0);
+				System.out.println("[TABLA - inserPost] Generacion de cubeta: "
+						+ cubetas.getGeneracion() + "es mayor a tamIndice? "
+						+ this.tamIndice);
 				if(cubetas.getGeneracion()>this.tamIndice) {
 					duplicarTabla();
 					acomodarPunteros();
@@ -79,6 +68,23 @@ public class TabladeHash {
 					acomodarPunteros();
 				}
 				insertarEntradaPost(archRegistro, pos);
+			} else {
+				System.out.println("[TABLA - insert] lastIndex: " + cubetas.getLastIndex()
+						+ " longitud de registros " + cubetas.registros.length);
+				for(int i = cubetas.getLastIndex(); i<cubetas.registros.length; i++) {
+					RegCubeta bus = cubetas.registros[i];
+					System.out.println("[TABLA - insertPost] Insertando: " +  archRegistro.getNumero());
+					System.out.println("[TABLA - insertPost] estado de i:" + i + " " + bus.getEstado());
+					if(bus.getEstado()==0){
+						bus.setEstado((byte) 1);
+						bus.setCodigo(clave);
+						bus.setLiga(pos);
+						cubetas.registros[i] = bus;
+						cubetas.setLastIndex(i+1);
+						i = cubetas.registros.length;
+						cubetas.escribirCubeta(0);
+					} //end if
+				} //end for
 			}
 		} else { //Ninguno de los casos anteriores
 			insertarEntradaPost(archRegistro, pos);
@@ -104,28 +110,13 @@ public class TabladeHash {
 			}
 		}
 		cubetas = cubetas.leerCubeta(posAInsertar);
-		boolean hayEspacio = false;
-		for(int i = 0; i<cubetas.registros.length; i++) {
-			RegCubeta bus = cubetas.registros[i];
-			System.out.println("[TABLA - insertPost] Insertando: " +  archRegistro.getNumero());
-			System.out.println("[TABLA - insertPost] estado de i:" + i + " " + bus.getEstado());
-			if(bus.getEstado()==0){
-				hayEspacio = true;
-				bus.setEstado((byte)1);
-				bus.setCodigo(clave);
-				bus.setLiga(pos);
-				cubetas.registros[i] = bus;
-				i = cubetas.registros.length;
-				cubetas.escribirCubeta(posAInsertar);
-			} //end if
-		} //end for
-		if(!hayEspacio) {
-			n = (int) cubetas.getrafLength() / cubetas.cubetaSize();
+		if(cubetas.getLastIndex()==cubetas.registros.length) { //La cubeta está llena
+			System.out.println("[TABLA - insertPos] Cubeta llena");
 			cubetas.split(posAInsertar);
 			cubetas = cubetas.leerCubeta(posAInsertar);
-			System.out.println("[TABLA - inserPost] Generacion de cubeta: " 
-								+ cubetas.getGeneracion() + "es mayor a tamIndice? " 
-								+ this.tamIndice);
+			System.out.println("[TABLA - inserPost] Generacion de cubeta: "
+					+ cubetas.getGeneracion() + "es mayor a tamIndice? "
+					+ this.tamIndice);
 			if(cubetas.getGeneracion()>this.tamIndice) {
 				duplicarTabla();
 				acomodarPunteros();
@@ -133,6 +124,32 @@ public class TabladeHash {
 				acomodarPunteros();
 			}
 			insertarEntradaPost(archRegistro, pos);
+		} else {
+			System.out.println("[TABLA - insert] lastIndex: " + cubetas.getLastIndex()
+					+ " longitud de registros " + cubetas.registros.length);
+			for(int i = cubetas.getLastIndex(); i<cubetas.registros.length; i++) {
+				RegCubeta bus = cubetas.registros[i];
+				System.out.println("[TABLA - insertPost] Insertando: " +  archRegistro.getNumero());
+				System.out.println("[TABLA - insertPost] estado de i:" + i + " " + bus.getEstado());
+				if(bus.getEstado()==0){
+					bus.setEstado((byte) 1);
+					bus.setCodigo(clave);
+					bus.setLiga(pos);
+					cubetas.registros[i] = bus;
+					for(int x = i; x<cubetas.registros.length; x++) {
+						RegCubeta temporal = cubetas.registros[x];
+						if(temporal.getEstado()==1) {
+							cubetas.setLastIndex(x+1);
+							System.out.println("[TABLA - insertPost]");
+						} else {
+							cubetas.setLastIndex(x);
+							x = cubetas.registros.length;
+						}
+					}
+					i = cubetas.registros.length;
+					cubetas.escribirCubeta(posAInsertar);
+				} //end if
+			} //end for
 		}
 	}
 	

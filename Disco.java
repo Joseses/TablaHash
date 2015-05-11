@@ -86,8 +86,8 @@ public class Disco {
 			}else if(option == 6){
 				System.out.println("--------------------------------------------------------------");
 				System.out.println("Creando registros");
-				for( int num = 1, i = 1; i <= 1; i++ ) { //Numero de Surcursales
-					for( int j = 1; j <= 100; j++ ) { //Numero de clientes
+				for( int num = 1, i = 1; i <= 100; i++ ) { //Numero de Surcursales
+					for( int j = 1; j <= 1000; j++ ) { //Numero de clientes
 						for( int k = 1; k <= 1; k++, num++ ) {
 							String suc = "Sucursal " + String.format( "%3d", i );
 							String nom = "Cliente " + j;
