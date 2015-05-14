@@ -29,6 +29,24 @@ public class TabladeHash {
 		return x;
 	}
 	
+	
+	public void setTamIndice()throws IOException
+        {
+            int tamaño;
+            String clave;
+            if(raf.length()== 0)
+                System.out.println("Indice vacío");
+            else{
+                raf.seek(0);
+                registro.read(raf);
+                clave = registro.getClave();
+                clave = clave.trim();
+                tamaño = clave.length();
+                tamIndice = tamaño;
+            }
+            
+        }
+	
 	public void insertarEntrada(Registro archRegistro, int pos) throws IOException {
 		String clave = funcionHash(archRegistro.getNumero());
 		if(raf.length()==0) { //No existe ninguna entrada en la tabla de hash
@@ -211,4 +229,39 @@ public class TabladeHash {
 			}
 		}
 	}
+	
+	
+	public void busquedaLineal(int noCliente)throws IOException
+        {
+            boolean encontrado = false;
+            this.setTamIndice();
+            String cliente = funcionHash(noCliente);
+            Cubeta temp = new Cubeta();
+            int numeroRegistros = (int)raf.length()/registro.length();
+            String recortada = cliente.substring(cliente.length()-tamIndice);
+            
+            for(int i = 0; i < numeroRegistros; i++)
+            {
+                
+                //System.out.println("Hola1---"+registro.getClave()+"---"+recortada+"--"+tamIndice);
+                raf.seek(i*registro.length());
+                registro.read(raf);
+                
+                if((registro.getClave().trim()).equals(recortada))
+                {
+                    //System.out.println("H222");
+                    //System.out.println("Pasamos a la cubeta");
+
+                    temp = cubetas.leerCubeta(registro.getLiga());                    
+                    temp.busquedaLineal(cliente);
+                    i=numeroRegistros;
+                    encontrado = true;
+                }
+                
+                
+            }
+            
+            if(!encontrado)
+            System.out.println("El registro no existe");
+        }
 }
