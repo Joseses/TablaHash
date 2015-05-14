@@ -74,10 +74,13 @@ public class Disco {
 				System.out.print("Introduzca el numero de cuenta: ");
 				int num = sc.nextInt();
 				System.out.println("--------------------------------------------------------------");
+                                archivo.busquedaLineal(num);
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 4){
 				System.out.println("--------------------------------------------------------------");
 				archivo.mostrar();
+				System.out.println("--------------------------------------------------------------");
+                                archivo.imprimirTodo();
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 5){
 				System.out.println("--------------------------------------------------------------");
