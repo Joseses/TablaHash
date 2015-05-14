@@ -69,4 +69,3 @@ public class Archivo {
             tablahash.busquedaLineal(noCliente);
         }
 }
-}

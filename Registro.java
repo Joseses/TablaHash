@@ -30,22 +30,6 @@ public class Registro {
     / métodos getters / setters
     /-----------------------------------------------------------------*/
     
-    public boolean deleteFlag() {
-        
-        if( borrado == NOT_DELETED )
-            return false;
-        else
-            return true;
-    }
-    
-    public void setFlag( boolean flag ) {
-        
-        if( flag )
-            borrado = DELETED;
-        else
-            borrado = NOT_DELETED;
-    }
-    
 	public String getSucursal() { return new String( sucursal ); }
     
     public void setSucursal( String suc ) {
@@ -75,14 +59,6 @@ public class Registro {
     }
     
     public double getSaldo() { return saldo; }
-
-    public boolean getBorrado() {
-        if(borrado==NOT_DELETED){
-            return false;
-        } else {
-            return true;
-        }
-    }
     
     /*-----------------------------------------------------------------
     / longitud en bytes de un registro
