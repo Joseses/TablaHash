@@ -3,7 +3,7 @@ import java.io.*;
 public class Archivo {
 
 	private RandomAccessFile raf = null;
-	public TabladeHash tablahash = null;
+	private TabladeHash tablahash = null;
 
 	public Archivo(RandomAccessFile archivo, RandomAccessFile indice,
 					RandomAccessFile cubetas) {
@@ -64,4 +64,9 @@ public class Archivo {
 		tablahash.mostrar();
 		System.out.println("-------------------------------------------");
 	}
+	
+	public void busquedaLineal(int noCliente)throws IOException{
+            tablahash.busquedaLineal(noCliente);
+        }
+}
 }
