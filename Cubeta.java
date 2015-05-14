@@ -182,4 +182,24 @@ public class Cubeta {
 		this.lastIndex = 0;
 		this.write(raf);
 	}
+	
+	
+	public void busquedaLineal(String clave) throws IOException
+        {
+           boolean encontrado=false;
+            for(int i=0; i<CUBETAM; i++)
+            {
+                if(this.registros[i].getCodigo().equals(clave))
+                {
+                    System.out.println("El registro se encuentra en posición: " + this.registros[i].getLiga());
+                   
+                    i=CUBETAM;
+                    encontrado = true;
+                }
+                
+            }
+            
+            if(!encontrado)
+                System.out.println("El registro no existe");
+        }
 }
