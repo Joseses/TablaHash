@@ -59,22 +59,32 @@ public class Disco {
 				System.out.print("Introduzca la cantidad de la cuenta: ");
 				double sal = sc.nextDouble();
 				Registro nuevo = new Registro(suc, num, nom, sal);
-				archivo.insertar(nuevo);
+				final long startTime = System.nanoTime();
+                                archivo.insertar(nuevo);
+                                final long duration = System.nanoTime() - startTime;
+				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
 				System.out.println("-------------------------Registro Agregado-------------------------");
 			}else if(option == 2) {
 				System.out.println("--------------------------------------------------------------");
 				//archivo.mostrar();
 				System.out.println("Introduzca el nombre de la Sucursal del registro a eliminar");
 				System.out.print("(Se eliminara el primer registro encontrado de la sucursal): ");
-				int suc = sc.nextInt();
+				int num = sc.nextInt();
 				System.out.println("--------------------------------------------------------------");
+				final long startTime = System.nanoTime();
+                                //archivo.eliminar(num);
+                                final long duration = System.nanoTime() - startTime;
+				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 3){
 				System.out.println("--------------------------------------------------------------");
 				System.out.print("Introduzca el numero de cuenta: ");
 				int num = sc.nextInt();
 				System.out.println("--------------------------------------------------------------");
+                                final long startTime = System.nanoTime();
                                 archivo.busquedaLineal(num);
+                                final long duration = System.nanoTime() - startTime;
+				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 4){
 				System.out.println("--------------------------------------------------------------");
