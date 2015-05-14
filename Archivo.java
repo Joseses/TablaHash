@@ -3,7 +3,7 @@ import java.io.*;
 public class Archivo {
 
 	private RandomAccessFile raf = null;
-	private TabladeHash tablahash = null;
+	public TabladeHash tablahash = null;
 
 	public Archivo(RandomAccessFile archivo, RandomAccessFile indice,
 					RandomAccessFile cubetas) {
@@ -20,6 +20,24 @@ public class Archivo {
 		insertarEn(((int)raf.length()/registro.length()), registro);
 		System.out.println("Se inserta el numero " + registro.getNumero());
 		tablahash.insertarEntrada(registro, (int)raf.length()-registro.length());
+	}
+	
+	
+	public void imprimirTodo() throws IOException {
+		
+		Registro registro = new Registro();
+		int length = (int) (raf.length() / registro.length());
+		System.out.println( "Número de registros: " + length );
+		raf.seek( 0 );
+		for( int i = 0; i < length; i++ ) {
+			
+			registro.read( raf );
+			System.out.println( "( " + registro.getSucursal() + ", "
+                                     + registro.getNumero() + ", "
+                                     + registro.getNombre() + ", "
+                                     + registro.getSaldo() + ", "
+                                     /*+ registro.getEliminado() + " )" */);
+		}
 	}
 	
 	private void insertarEn( int posicion, Registro registro ) throws IOException {
@@ -44,5 +62,6 @@ public class Archivo {
 	public void mostrar() throws IOException{
 		System.out.println("-----REGISTROS EN LA TABLA-----");
 		tablahash.mostrar();
+		System.out.println("-------------------------------------------");
 	}
 }
