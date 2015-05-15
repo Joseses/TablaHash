@@ -272,4 +272,54 @@ public class TabladeHash {
             if(!encontrado)
             System.out.println("El registro no existe");
         }
+        
+        public void eliminar(int numero)throws IOException
+        {
+        
+            this.setTamIndice();
+            String cliente = funcionHash(numero);
+            Cubeta temp = new Cubeta();
+            int numeroRegistros = (int)raf.length()/registro.length();
+            String recortada = cliente.substring(cliente.length()-tamIndice);
+            
+            for(int i = 0; i < numeroRegistros; i++)
+            {
+                
+                raf.seek(i*registro.length());
+                registro.read(raf);
+                
+                if((registro.getClave().trim()).equals(recortada))
+                {
+                   
+                    temp = cubetas.leerCubeta(registro.getLiga());                    
+                    temp.eliminar(cliente, registro.getLiga());
+                    i=numeroRegistros;
+                }  
+            }
+        }
+        
+        public int buscaElimina(int noCliente) throws IOException
+        {
+            
+            this.setTamIndice();
+            String cliente = funcionHash(noCliente);
+            Cubeta temp = new Cubeta();
+            int numeroRegistros = (int)raf.length()/registro.length();
+            String recortada = cliente.substring(cliente.length()-tamIndice);
+            
+            for(int i = 0; i < numeroRegistros; i++)
+            {
+                raf.seek(i*registro.length());
+                registro.read(raf);
+                
+                if((registro.getClave().trim()).equals(recortada))
+                {                   
+                    temp = cubetas.leerCubeta(registro.getLiga());                    
+                    return temp.buscaElimina(cliente);
+                }
+                
+            }
+          return -1;
+        }
+        
 }
