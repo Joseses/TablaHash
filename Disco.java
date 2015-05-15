@@ -67,14 +67,14 @@ public class Disco {
 			}else if(option == 2) {
 				System.out.println("--------------------------------------------------------------");
 				//archivo.mostrar();
-				System.out.println("Introduzca el nombre de la Sucursal del registro a eliminar");
-				System.out.print("(Se eliminara el primer registro encontrado de la sucursal): ");
+				System.out.println("Introduzca el nombre del número de cuenta del registro a eliminar");
+				System.out.print("(Se eliminara el primer registro encontrado con el número): ");
 				int num = sc.nextInt();
 				System.out.println("--------------------------------------------------------------");
-				final long startTime = System.nanoTime();
-                                //archivo.eliminar(num);
+                                final long startTime = System.nanoTime();
+                                archivo.eliminar(num);
                                 final long duration = System.nanoTime() - startTime;
-				System.out.println("Tiempo estimado "+ (duration/1000) +" milisegundos" );
+				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 3){
 				System.out.println("--------------------------------------------------------------");
