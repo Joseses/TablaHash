@@ -45,6 +45,7 @@ public class Archivo {
 		int n = (int) raf.length() / registro.length();
 
 		for( int i = n-1; i >= posicion; i -- ) {
+			System.out.println("WOW, ENTRAMOS A FOR");
 
 			Registro temp = new Registro();
 

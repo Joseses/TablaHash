@@ -63,9 +63,9 @@ public class TabladeHash {
 			nueva.setCodigo(clave);
 			nueva.setLiga(pos);
 			temporal[0] = nueva;
-			for(int i = 0; i<temporal.length;i++) {
-				RegCubeta tem = temporal[i];
-			}
+//			for(int i = 0; i<temporal.length;i++) {
+//				RegCubeta tem = temporal[i];
+//			}
 			cubetas.registros = temporal;
 			cubetas.escribirCubeta(0);
 		} else if (raf.length()==registro.length()) { //Sólo existe una entrada en el registro
@@ -129,17 +129,25 @@ public class TabladeHash {
 		}
 		cubetas = cubetas.leerCubeta(posAInsertar);
 		if(cubetas.getLastIndex()==cubetas.registros.length) { //La cubeta está llena
-			System.out.println("[TABLA - insertPos] Cubeta llena");
+			final long startTime = System.nanoTime(); //Antes de función
 			cubetas.split(posAInsertar);
+			final long duration = System.nanoTime() - startTime; //Después de función
+			System.out.println("SPLIT time: " + (duration/1000000) + " milisegundos");
 			cubetas = cubetas.leerCubeta(posAInsertar);
 			System.out.println("[TABLA - inserPost] Generacion de cubeta: "
 					+ cubetas.getGeneracion() + "es mayor a tamIndice? "
 					+ this.tamIndice);
 			if(cubetas.getGeneracion()>this.tamIndice) {
+				final long startTime1 = System.nanoTime(); //Antes de función
 				duplicarTabla();
 				acomodarPunteros();
+				final long duration1 = System.nanoTime() - startTime1; //Después de función
+				System.out.println("duplicar+acomodar time: " + (duration / 1000) + " microsegundos");
 			} else {
+				final long startTime2 = System.nanoTime(); //Antes de función
 				acomodarPunteros();
+				final long duration2 = System.nanoTime() - startTime2; //Después de función
+				System.out.println("AcomodarPunteros time: " + (duration / 1000) + " microsegundos");
 			}
 			insertarEntradaPost(archRegistro, pos);
 		} else {

@@ -62,7 +62,7 @@ public class Disco {
 				final long startTime = System.nanoTime();
                                 archivo.insertar(nuevo);
                                 final long duration = System.nanoTime() - startTime;
-				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
+				System.out.println("Tiempo estimado " + (duration / 1000000) + " milisegundos");
 				System.out.println("-------------------------Registro Agregado-------------------------");
 			}else if(option == 2) {
 				System.out.println("--------------------------------------------------------------");
@@ -74,17 +74,17 @@ public class Disco {
 				final long startTime = System.nanoTime();
                                 //archivo.eliminar(num);
                                 final long duration = System.nanoTime() - startTime;
-				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
+				System.out.println("Tiempo estimado "+ (duration/1000) +" milisegundos" );
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 3){
 				System.out.println("--------------------------------------------------------------");
 				System.out.print("Introduzca el numero de cuenta: ");
 				int num = sc.nextInt();
 				System.out.println("--------------------------------------------------------------");
-                                final long startTime = System.nanoTime();
-                                archivo.busquedaLineal(num);
-                                final long duration = System.nanoTime() - startTime;
-				System.out.println("Tiempo estimado "+ (duration/1000000) +" milisegundos" );
+                final long startTime = System.nanoTime();
+                archivo.busquedaLineal(num);
+                final long duration = System.nanoTime() - startTime;
+				System.out.println("Tiempo estimado " + (duration / 1000) + " milisegundos");
 				System.out.println("--------------------------------------------------------------");
 			}else if(option == 4){
 				System.out.println("--------------------------------------------------------------");
@@ -99,6 +99,7 @@ public class Disco {
 			}else if(option == 6){
 				System.out.println("--------------------------------------------------------------");
 				System.out.println("Creando registros");
+				final long startTime = System.nanoTime();
 				for( int num = 1, i = 1; i <= 100; i++ ) { //Numero de Surcursales
 					for( int j = 1; j <= 1000; j++ ) { //Numero de clientes
 						for( int k = 1; k <= 1; k++, num++ ) {
@@ -110,6 +111,8 @@ public class Disco {
                     	}
                 	}
             	}
+				final long duration = System.nanoTime() - startTime;
+				System.out.println("Tiempo estimado " + (duration / 1000000000) + " milisegundos");
 				System.out.println("Registros creados");
 			}else{
 				System.out.println("--------------------------------------------------------------");

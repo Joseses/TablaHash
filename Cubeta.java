@@ -3,7 +3,7 @@ import java.io.RandomAccessFile;
 
 public class Cubeta {
 	
-	public static final int CUBETAM = 2;
+	public static final int CUBETAM = 1000;
 	
 	public RegCubeta registro = null;
 	private RandomAccessFile raf = null;
@@ -135,16 +135,12 @@ public class Cubeta {
 		int n = (int) raf.length() / this.cubetaSize();
 		this.genCubeta++;
 		//Numero binario que se usara como clave de asociación a la tabla de hash
-		int repreBin = (int)Math.pow(2, this.genCubeta); 
-		System.out.println("[CUBETA - split] valor de repreBin: " + repreBin);
+		int repreBin = (int)Math.pow(2, this.genCubeta);
 		String asocTablaTemp = Integer.toBinaryString(repreBin);
-		System.out.println("[CUBETA - split] valor de asocTablaTempo: " + asocTablaTemp);
 		String claveActual = this.getClavedeTabla();
-		System.out.println("[CUBETA - split] valor de claveActual: " + claveActual);
 		claveActual = claveActual.trim();
 		String clavecubeta1 = "0" + claveActual;
 		String clavecubeta2 = "1" + claveActual;
-		System.out.println("[CUBETA - split] Al final la clave1 es: " +  clavecubeta1 + " clave2:" + clavecubeta2);
 		raf.seek(pos);
 		this.setClavedeTabla(clavecubeta1);
 		write(raf);
@@ -157,12 +153,10 @@ public class Cubeta {
 	}
 	
 	public void organizarRegistros(int pos) throws IOException{
-		System.out.println("[CUBETA - org] Posicion inicial: " + pos);
 		raf.seek(pos);
 		this.read(raf);
 		RegCubeta[] temporales = this.registros;
 		String claveBuena = this.getClavedeTabla().trim();
-		System.out.println("[CUBETA - org] La clave buena es: " + claveBuena);
 		for(int i = 0; i <temporales.length; i++) {
 			RegCubeta temp = new RegCubeta();
 			temp = temporales[i];
@@ -174,7 +168,7 @@ public class Cubeta {
 				temp.setLiga(-1);
 				temp = temporales[i];
 			} else {
-				System.out.println("[CUBETA - org]La clave buena sí es buena: " +  claveBuena + " claveTemporal: " + claveTemporal);
+
 			}
 		}
 		this.registros = temporales;
