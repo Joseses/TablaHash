@@ -3,7 +3,7 @@ import java.io.RandomAccessFile;
 
 public class Cubeta {
 	
-	public static final int CUBETAM = 1000;
+	public static final int CUBETAM = 2500;
 	
 	public RegCubeta registro = null;
 	private RandomAccessFile raf = null;

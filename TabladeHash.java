@@ -142,12 +142,12 @@ public class TabladeHash {
 				duplicarTabla();
 				acomodarPunteros();
 				final long duration1 = System.nanoTime() - startTime1; //Después de función
-				System.out.println("duplicar+acomodar time: " + (duration / 1000) + " microsegundos");
+				System.out.println("duplicar+acomodar time: " + (duration / 1000000) + " milisegundos");
 			} else {
 				final long startTime2 = System.nanoTime(); //Antes de función
 				acomodarPunteros();
 				final long duration2 = System.nanoTime() - startTime2; //Después de función
-				System.out.println("AcomodarPunteros time: " + (duration / 1000) + " microsegundos");
+				System.out.println("AcomodarPunteros time: " + (duration / 1000000) + " milisegundos");
 			}
 			insertarEntradaPost(archRegistro, pos);
 		} else {

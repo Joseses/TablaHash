@@ -112,7 +112,7 @@ public class Disco {
                 	}
             	}
 				final long duration = System.nanoTime() - startTime;
-				System.out.println("Tiempo estimado " + (duration / 1000000000) + " milisegundos");
+				System.out.println("Tiempo estimado " + (duration / 1000000000) + " segundos");
 				System.out.println("Registros creados");
 			}else{
 				System.out.println("--------------------------------------------------------------");
