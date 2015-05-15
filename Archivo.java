@@ -69,4 +69,26 @@ public class Archivo {
 	public void busquedaLineal(int noCliente)throws IOException{
             tablahash.busquedaLineal(noCliente);
         }
+        
+        public void eliminar(int noCliente) throws IOException
+        {
+            int pos = tablahash.buscaElimina(noCliente);
+            Registro temp = new Registro();
+            
+            if(pos>-1)
+            {
+                raf.seek(pos);
+                temp.read(raf);
+                temp = new Registro("eliminado",-1,"",-1);
+                temp.setFlag(true);
+                raf.seek(pos);
+                temp.write(raf);
+                
+                tablahash.eliminar(noCliente);
+            }
+              else
+                System.out.println("EL registro no existe");
+        }
+        
+        
 }
