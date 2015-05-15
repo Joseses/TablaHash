@@ -80,7 +80,6 @@ public class Archivo {
                 raf.seek(pos);
                 temp.read(raf);
                 temp = new Registro("eliminado",-1,"",-1);
-                temp.setFlag(true);
                 raf.seek(pos);
                 temp.write(raf);
                 
