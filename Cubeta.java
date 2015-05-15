@@ -196,4 +196,51 @@ public class Cubeta {
             if(!encontrado)
                 System.out.println("El registro no existe");
         }
+        
+        public void eliminar(String clave, int posicion) throws IOException
+        {
+            boolean encontrado=false;
+            for(int i=0; i<CUBETAM; i++)
+            {
+                if(this.registros[i].getCodigo().equals(clave))
+                {
+                    
+                    this.setLastIndex(0);
+                    this.registros[i].setEstado((byte)0);
+                    this.registros[i].setCodigo("");
+                    this.registros[i].setLiga(-1);
+                    i=CUBETAM;
+                    encontrado = true;
+                }
+                
+            }
+            
+            if(!encontrado)
+                ;
+            else
+            {
+                this.escribirCubeta(posicion);
+            }
+
+        }
+        
+        public int buscaElimina(String clave)
+        {
+            boolean encontrado=false;
+            for(int i=0; i<CUBETAM; i++)
+            {
+                if(this.registros[i].getCodigo().equals(clave))
+                {
+                    System.out.println("El registro se encuentra en posición: " + this.registros[i].getLiga()
+                    + " se eliminará");
+                    
+                    return this.registros[i].getLiga();
+                }
+            }
+            
+            if(!encontrado)
+                System.out.println("El registro no existe");
+            return -1;
+
+        }
 }
